@@ -26,16 +26,11 @@ main <- function(file_name){
   })
   
   # Constants
-  n_artist_cols <- 4
   n_genre_cols <- 5
-    
   
-  
-  # File to read the raw data from
-  in_path <- here() |> paste0("/data/raw/", file_name, ".csv")
-  
-  # Safely read the raw data
+  # Read the raw data
   raw_data <- NULL
+  in_path <- here() |> paste0("/data/raw/", file_name, ".csv") # The file to read the raw data from
   try({
     raw_data <- read_csv(in_path, show_col_types = FALSE)
   })
@@ -44,19 +39,22 @@ main <- function(file_name){
     return()
   }
   
-  # Clean the data
+  
+  #===Clean the data===
+  
   clean_data <- raw_data |>
+    # Split the 'artists' column (which contains a list of artists separated by
+    # semi-colons) into multiple columns (one for each artist).
     pull(artists) |>
     str_split(pattern = ";", simplify = TRUE) |>
     as_tibble() |>
-    select(all_of(1:n_artist_cols)) |>
-    cbind(
-      raw_data |> select(-c(1, 3))
-    ) |>
+    select(1:4) |>
     rename(
       artist_1 = V1, artist_2 = V2, 
       artist_3 = V3, artist_4 = V4
     ) |> 
+    cbind(raw_data) |>
+    # Select the relevant columns
     select(
       track_id, track_name, album_name, 
       artist_1, artist_2, artist_3, artist_4, 
@@ -64,18 +62,20 @@ main <- function(file_name){
       tempo, duration_ms, popularity, danceability, 
       loudness, speechiness, acousticness, 
       instrumentalness, liveness, energy, valence
-    ) |> 
+    ) |>
     mutate(
+      # Convert the 'duration_ms' column from milliseconds to seconds and 
+      # round to two decimal places.
       duration_ms = round(duration_ms * 0.001, 2),
-      tempo = round(tempo, 2)
-    ) |> 
-    rename(duartion_s = duration_ms) |>
-    mutate(
+      # Round the 'tempo' column (BPM) to two decimal places
+      tempo = round(tempo, 2), 
+      # Decode the 'mode' column
       mode = case_when(
         mode == 1 ~ 'Major',
         mode == 0 ~ 'Minor',
         TRUE ~ as.character(NA)
       ),
+      # Decode the 'key' column
       key = case_when(
         key == 0 ~ 'C',
         key == 1 ~ 'C-sharp',
@@ -92,26 +92,14 @@ main <- function(file_name){
         TRUE ~ as.character(NA)
       ),
     ) |> 
+    rename(duartion_s = duration_ms) |>
+    # Sort the dataframe
     arrange(
       track_genre, artist_1, album_name, 
       artist_2, artist_3, artist_4, 
       key, time_signature, tempo
-    )
-  
-  genres_df <- clean_data |>
-    group_by(track_id) |>
-    summarize(toString(track_genre)) |>
-    separate(
-      col = 'toString(track_genre)', 
-      into = sprintf("track_genre_%s", 1:n_genre_cols), 
-      sep = ",", 
-      fill = "right"
-    ) 
-  
-  clean_data <- clean_data[!duplicated(clean_data$track_id), ] |>
-    select(-c(track_genre)) |>
-    inner_join(genres_df, by = 'track_id') |> 
-    select(c(1:7, 23:27, 8:22)) |> 
+    ) |> 
+    # Replace empty strings with NAs for tracks without multiple artists
     mutate(
       artist_2 = case_when(
         artist_2 == '' ~ as.character(NA),
@@ -127,7 +115,28 @@ main <- function(file_name){
       )
     )
   
-
+  # Some tracks have duplicate rows because there is one row for each
+  # genre that the track falls under.
+  genres_df <- clean_data |>
+    # Group by 'track_id' to deal with duplicate rows
+    group_by(track_id) |> 
+    # Extract every genre that a track falls under, concatenate them into a 
+    # string in which each genre is separated by a comma, and store the string in
+    # a new column called 'genres'.
+    summarize(genres = toString(track_genre)) |>
+    # Split the 'genres' column into multiple columns (one for each genre)
+    separate(
+      col = 'genres', 
+      into = sprintf("track_genre_%s", 1:n_genre_cols), 
+      sep = ",", 
+      fill = "right"
+    ) 
+  clean_data <- clean_data[!duplicated(clean_data$track_id), ] |>
+    select(-c(track_genre)) |>
+    inner_join(genres_df, by = 'track_id') |> 
+    select(c(1:7, 23:27, 8:22))
+  
+  
   
   # Ensure the output directory exists
   out_dir <- here() |> paste0("/data/clean")
@@ -136,7 +145,7 @@ main <- function(file_name){
   })
   
   # Save the cleaned data 
-  out_path <- out_dir |> paste0("/", file_name, ".csv")
+  out_path <- out_dir |> paste0("/", file_name, ".csv") # The file to save the clean data to
   write_csv(clean_data, out_path)
 }
 
