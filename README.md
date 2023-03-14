@@ -2,7 +2,7 @@
 
 Clean the Spotify tracks dataset.
 
-This is a dataset of Spotify tracks from a range of 125 different genres. You can find the origninal data set from Kaggle [here.](https://www.kaggle.com/datasets/maharshipandya/-spotify-tracks-dataset)
+This is a dataset of Spotify tracks from a range of 125 different genres. You can find the original data set from Kaggle [here.](https://www.kaggle.com/datasets/maharshipandya/-spotify-tracks-dataset)
  
 
 <hr>
