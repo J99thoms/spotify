@@ -25,10 +25,14 @@ This is a dataset of Spotify tracks from a range of 125 different genres. You ca
 
   
  ### Dependencies
-- R version 4.2.2 with the following libraries:
+- `R version 4.2.2 with the following libraries:
    - [docopt](https://github.com/docopt/docopt.R)
    - [here](https://here.r-lib.org/)
    - [tidyverse](https://www.tidyverse.org/)
+ 
+ - Ensure that your terminal is setup to run `R` scripts:
+   - [Windows instructions](https://stackoverflow.com/questions/38456144/rscript-command-not-found#:~:text=R%20script%20through%20Windows%20command%20prompt)
+   - [Mac instructions](https://stackoverflow.com/questions/38456144/rscript-command-not-found#:~:text=but%20use%20a-,mac,-%2C%20)
    
  <hr>
    
