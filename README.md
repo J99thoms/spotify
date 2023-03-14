@@ -25,7 +25,7 @@ This is a dataset of Spotify tracks from a range of 125 different genres. You ca
 
   
  ### Dependencies
-- `R version 4.2.2 with the following libraries:
+- `R version 4.2.2` with the following libraries:
    - [docopt](https://github.com/docopt/docopt.R)
    - [here](https://here.r-lib.org/)
    - [tidyverse](https://www.tidyverse.org/)
