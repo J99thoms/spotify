@@ -9,7 +9,9 @@ You can find the origninal data set from Kaggle [here.](https://www.kaggle.com/d
 
 ## Usage
  
- In the root of your local repo, open terminal and run `R/clean_data.R --file_name=<file_name>`
+ Clone this repository to your local machine.
+ 
+ In the root directory of your local repo, open terminal and run `R/clean_data.R --file_name=<file_name>`
  
  For example, `Rscript R/clean_data.R --file_name='spotify_tracks'`
  
