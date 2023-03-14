@@ -11,7 +11,7 @@ This is a dataset of Spotify tracks from a range of 125 different genres. You ca
  
  Clone this repository to your local machine.
  
- In the root directory of your local repo, open terminal and run `R/clean_data.R --file_name=<file_name>`
+ In the root directory of your local repo, open terminal and run `Rscript R/clean_data.R --file_name=<file_name>`
  
  For example, `Rscript R/clean_data.R --file_name='spotify_tracks'`
  
